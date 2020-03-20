@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "clean": "rm -rf ./dist && rm -f ./tmp/*.ts",
-    "build": "yarn clean && yarn lint && yarn test && yarn tsc",
+    "build": "yarn clean && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc",
     "prepublish": "yarn build"
   },
   "repository": {

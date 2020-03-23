@@ -12,8 +12,9 @@
     "oas": "yarn ts-node test/runtime-driver.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "clean": "rm -rf ./dist && rm -f ./tmp/*.ts",
-    "build": "yarn clean && yarn oas && yarn tsc && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc",
+    "clean": "yarn clean:dist && rm -f ./tmp/*.ts",
+    "clean:dist": "rm -rf ./dist",
+    "build": "yarn clean && yarn oas && yarn tsc && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc --noEmit",
     "prepublish": "yarn build"
   },
   "repository": {

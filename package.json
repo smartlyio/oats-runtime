@@ -8,11 +8,12 @@
   "main": "dist/src/runtime.js",
   "types": "dist/src/runtime.d.ts",
   "scripts": {
-    "test": "yarn ts-node test/runtime-driver.ts && yarn jest",
+    "test": "yarn jest",
+    "oas": "yarn ts-node test/runtime-driver.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "clean": "rm -rf ./dist && rm -f ./tmp/*.ts",
-    "build": "yarn clean && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc",
+    "build": "yarn clean && yarn oas && yarn tsc && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc",
     "prepublish": "yarn build"
   },
   "repository": {

@@ -50,19 +50,30 @@ type ValueType =
 export function map<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T,
-  fn: (p: T) => T
+  fn: (p: T, traversalPath: string[]) => T
+): A {
+  return mapInternal(value, predicate, fn, []);
+}
+
+function mapInternal<A extends ValueType, T extends ValueType>(
+  value: A,
+  predicate: (a: any) => a is T,
+  fn: (p: T, traversalPath: string[]) => T,
+  traversalPath: string[]
 ): A {
   if (predicate(value)) {
-    value = fn(value) as any;
+    value = fn(value, traversalPath) as any;
   }
   if (Array.isArray(value)) {
-    const arr: any = value.map(item => map(item, predicate, fn));
+    const arr: any = value.map((item, index) =>
+      mapInternal(item, predicate, fn, traversalPath.concat(String(index)))
+    );
     return selectArray(value, arr) as any;
   }
   if (value && typeof value === 'object') {
     const record: any = {};
     Object.keys(value).map(key => {
-      record[key] = map((value as any)[key], predicate, fn);
+      record[key] = mapInternal((value as any)[key], predicate, fn, traversalPath.concat(key));
     });
     return selectRecord(value, record);
   }

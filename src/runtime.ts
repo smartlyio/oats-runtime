@@ -72,9 +72,9 @@ export function map<A extends ValueType, T extends ValueType>(
 export async function pmap<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T,
-  map: (p: T) => Promise<T>
+  map: (p: T, traversalPath: string[]) => Promise<T>
 ): Promise<A> {
-  return pmapInternal(value, predicate, map);
+  return pmapInternal(value, predicate, map, []);
 }
 
 function isPromise(p: any): p is Promise<any> {
@@ -84,15 +84,16 @@ function isPromise(p: any): p is Promise<any> {
 function pmapInternal<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T,
-  map: (p: T) => Promise<T>
+  map: (p: T, traversalPath: string[]) => Promise<T>,
+  traversalPath: string[]
 ): Promise<A> | A {
   if (predicate(value)) {
-    value = map(value) as any;
+    value = map(value, traversalPath) as any;
   }
   if (isPromise(value)) {
-    return value.then(n => pmapComposite(n, predicate, map));
+    return value.then(n => pmapComposite(n, predicate, map, traversalPath));
   }
-  return pmapComposite(value, predicate, map);
+  return pmapComposite(value, predicate, map, traversalPath);
 }
 
 function selectArray<T>(original: T[], newArray: T[]): T[] {
@@ -120,9 +121,12 @@ function selectRecord<T extends { [key: string]: unknown }>(original: T, newReco
 function pmapArray<A, T>(
   value: A[],
   predicate: (v: any) => v is T,
-  map: (v: T) => Promise<T>
+  map: (v: T, traversalPath: string[]) => Promise<T>,
+  traversalPath: string[]
 ): Promise<A[]> | A[] {
-  const mapped = value.map(n => pmapInternal<A, T>(n, predicate, map));
+  const mapped = value.map((n, i) =>
+    pmapInternal<A, T>(n, predicate, map, traversalPath.concat(String(i)))
+  );
   if (mapped.some(isPromise)) {
     return Promise.all(mapped).then(newValues => {
       return selectArray(value, newValues);
@@ -134,12 +138,13 @@ function pmapArray<A, T>(
 function pmapObject<A, T>(
   value: A,
   predicate: (v: any) => v is T,
-  map: (v: T) => Promise<T>
+  map: (v: T, traversalPath: string[]) => Promise<T>,
+  traversalPath: string[]
 ): Promise<A> | A {
   const record: any = {};
   const promises: Array<Promise<unknown>> = [];
   Object.keys(value).forEach(key => {
-    const v = pmapInternal((value as any)[key], predicate, map);
+    const v = pmapInternal((value as any)[key], predicate, map, traversalPath.concat(key));
     if (isPromise(v)) {
       promises.push(
         v.then(result => {
@@ -160,13 +165,14 @@ function pmapObject<A, T>(
 function pmapComposite<A, T>(
   value: A,
   predicate: (v: any) => v is T,
-  map: (v: T) => Promise<T>
+  map: (v: T, traversalPath: string[]) => Promise<T>,
+  traversalPath: string[]
 ): Promise<A> | A {
   if (Array.isArray(value)) {
-    return pmapArray(value, predicate, map) as any;
+    return pmapArray(value, predicate, map, traversalPath) as any;
   }
   if (value && typeof value === 'object') {
-    return pmapObject(value, predicate, map);
+    return pmapObject(value, predicate, map, traversalPath);
   }
   return value;
 }

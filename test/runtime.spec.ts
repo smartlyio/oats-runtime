@@ -2,7 +2,7 @@ import * as jsc from 'jsverify';
 import * as _ from 'lodash';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { make, pmap, set } from '../src/runtime';
+import { make, pmap, set, map } from '../src/runtime';
 import { TestClass } from './test-class';
 
 const getWithTraversalPath = (dict: any, path: string[]): any => {
@@ -175,5 +175,22 @@ describe('set', () => {
     expect(newValue.b).toEqual('new value');
     expect(newValue.a).toEqual(['a']);
     expect(value.b).toEqual('original value');
+  });
+});
+
+describe('map', () => {
+  jsc.property('maps objects', jsc.dict(jsc.string), dict => {
+    const mapped = map(
+      dict,
+      (n: any): n is string => _.isString(n),
+      (n: string) => n.toUpperCase()
+    );
+    expect(mapped).toEqual(
+      Object.keys(dict).reduce((memo: any, n) => {
+        memo[n] = dict[n].toUpperCase();
+        return memo;
+      }, {})
+    );
+    return true;
   });
 });

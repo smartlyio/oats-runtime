@@ -5,6 +5,11 @@ import { promisify } from 'util';
 import { make, pmap, set } from '../src/runtime';
 import { TestClass } from './test-class';
 
+const getWithTraversalPath = (dict: any, path: string[]): any => {
+  return path.reduce((toBeTraversed: any, nextHop: string) => {
+    return toBeTraversed[nextHop];
+  }, dict);
+};
 describe('pmap', () => {
   jsc.property('leaves object unchanged when no matches', jsc.json, async dict => {
     const clone = _.cloneDeep(dict);
@@ -78,6 +83,24 @@ describe('pmap', () => {
       async (n: string) => n.toUpperCase()
     );
     expect(mapped).toEqual(arr.map(n => n.toUpperCase()));
+    return true;
+  });
+
+  jsc.property('exposes current traversalPath', jsc.json, async dict => {
+    const traversalPaths: string[][] = [];
+    const mapped = await pmap(
+      dict,
+      (n: any): n is string => _.isString(n),
+      async (n: string, path: string[]) => {
+        traversalPaths.push(path);
+        return n.toUpperCase();
+      }
+    );
+
+    traversalPaths.forEach(path => {
+      const value = getWithTraversalPath(mapped, path);
+      expect(value).toEqual(value.toUpperCase());
+    });
     return true;
   });
 

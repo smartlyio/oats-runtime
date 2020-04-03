@@ -86,7 +86,7 @@ describe('pmap', () => {
     return true;
   });
 
-  jsc.property('exposes current traversalPath', jsc.json, async dict => {
+  jsc.property('exposes traversalPath', jsc.json, async dict => {
     const traversalPaths: string[][] = [];
     const mapped = await pmap(
       dict,
@@ -191,6 +191,24 @@ describe('map', () => {
         return memo;
       }, {})
     );
+    return true;
+  });
+
+  jsc.property('exposes traversalPath', jsc.json, dict => {
+    const traversalPaths: string[][] = [];
+    const mapped = map(
+      dict,
+      (n: any): n is string => _.isString(n),
+      (n: string, path: string[]) => {
+        traversalPaths.push(path);
+        return n.toUpperCase();
+      }
+    );
+
+    traversalPaths.forEach(path => {
+      const value = getWithTraversalPath(mapped, path);
+      expect(value).toEqual(value.toUpperCase());
+    });
     return true;
   });
 });

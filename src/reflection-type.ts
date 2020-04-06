@@ -54,7 +54,7 @@ export interface StringType {
 
 export interface BooleanType {
   readonly type: 'boolean';
-  readonly enum: boolean[];
+  readonly enum?: boolean[];
 }
 
 export interface NumberType {

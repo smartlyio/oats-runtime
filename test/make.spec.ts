@@ -61,6 +61,48 @@ describe('makeOneOf', () => {
   });
 });
 
+describe('registerFormat', () => {
+  it ('throws for duplicate registers', () => {
+    make.registerFormat('duplicate-register', () => make.Make.ok('a'));
+    expect(() => {
+      make.registerFormat('duplicate-register', () => make.Make.ok('a'));
+    }).toThrow('format duplicate-register is already registered');
+  });
+});
+
+describe('makeString', () => {
+  it('rejects if the pattern does not match', () => {
+    const fun = make.makeString(undefined, 'a+');
+    expect(fun('b').errors[0].error).toEqual('b does not match pattern /a+/');
+  });
+
+  it('accepts if the pattern matches', () => {
+    const fun = make.makeString(undefined, 'a+');
+    fun('aaa').success();
+  });
+
+  it('throws on invalid regex', () => {
+    expect(() => make.makeString(undefined, '\\')).toThrow('Invalid regular expression');
+  });
+
+  it('accepts if format is not defined', () => {
+    const fun = make.makeString('some-format');
+    fun('b').success();
+  });
+
+  it('rejects if format rejects', () => {
+    make.registerFormat('some-rejecting-format', () => make.Make.error([{ path: [], error: 'some error' }]));
+    const fun = make.makeString('some-rejecting-format');
+    expect(fun('b').errors[0].error).toEqual('some error');
+  });
+
+  it('accepts if format accepts', () => {
+    make.registerFormat('some-accepting-format', () => make.Make.ok('ok'));
+    const fun = make.makeString('some-accepting-format');
+    expect(fun('b').success()).toEqual('b');
+  });
+});
+
 describe('makeAllOf', () => {
   it('applies all makers to value in succession', () => {
     const fun = make.makeAllOf(

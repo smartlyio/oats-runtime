@@ -63,9 +63,9 @@ describe('makeOneOf', () => {
 
 describe('registerFormat', () => {
   it ('throws for duplicate registers', () => {
-    make.registerFormat('duplicate-register', () => make.Make.ok('a'));
+    make.registerFormat('duplicate-register', () => make.Make.ok(undefined));
     expect(() => {
-      make.registerFormat('duplicate-register', () => make.Make.ok('a'));
+      make.registerFormat('duplicate-register', () => make.Make.ok(undefined));
     }).toThrow('format duplicate-register is already registered');
   });
 });
@@ -97,7 +97,7 @@ describe('makeString', () => {
   });
 
   it('accepts if format accepts', () => {
-    make.registerFormat('some-accepting-format', () => make.Make.ok('ok'));
+    make.registerFormat('some-accepting-format', () => make.Make.ok(undefined));
     const fun = make.makeString('some-accepting-format');
     expect(fun('b').success()).toEqual('b');
   });

@@ -95,25 +95,25 @@ function error<T>(error: string): Make<T> {
   return Make.error<T>([{ path: [], error }]);
 }
 
-export function registerFormat(format: string, maker: Maker<any, string>) {
+export function registerFormat(format: string, maker: Maker<any, undefined>) {
   assert(!formats[format], `format ${format} is already registered`);
   formats[format] = maker;
 }
 
-const formats: Record<string, Maker<any, string>> = {};
+const formats: Record<string, Maker<any, undefined>> = {};
 
-function getFormatter(format: string | undefined): Maker<any, string> {
+function getFormatter(format: string | undefined): Maker<any, undefined> {
   if (format === undefined) {
-    return value => Make.ok(value);
+    return () => Make.ok(undefined);
   }
   const formatter = formats[format];
   if (!formatter) {
-    return value => Make.ok(value);
+    return () => Make.ok(undefined);
   }
   return formatter;
 }
 
-function getPatterner(pattern: string | undefined): Maker<any, string> {
+function getPatterner(pattern: string | undefined): Maker<any, void> {
   if (pattern === undefined) {
     return value => Make.ok(value);
   }
@@ -122,7 +122,7 @@ function getPatterner(pattern: string | undefined): Maker<any, string> {
     if (!reg.test(value)) {
       return error(`${value} does not match pattern /${pattern}/`);
     }
-    return Make.ok(value);
+    return Make.ok(undefined);
   };
 }
 

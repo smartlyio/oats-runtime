@@ -82,7 +82,9 @@ describe('makeString', () => {
   });
 
   it('throws on invalid regex', () => {
-    expect(() => make.makeString(undefined, '\\')).toThrow('Invalid regular expression');
+    expect(() => make.makeString(undefined, '\\')).toThrow(
+      "pattern for 'type: string' is not valid: Invalid regular expression"
+    );
   });
 
   it('accepts if format is not defined', () => {

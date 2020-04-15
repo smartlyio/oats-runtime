@@ -117,13 +117,20 @@ function getPatterner(pattern: string | undefined): Maker<any, void> {
   if (pattern === undefined) {
     return value => Make.ok(value);
   }
-  const reg = new RegExp(pattern);
-  return value => {
-    if (!reg.test(value)) {
-      return error(`${value} does not match pattern /${pattern}/`);
+  try {
+    const reg = new RegExp(pattern);
+    return value => {
+      if (!reg.test(value)) {
+        return error(`${value} does not match pattern /${pattern}/`);
+      }
+      return Make.ok(undefined);
+    };
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      throw new Error("pattern for 'type: string' is not valid: " + e.message);
     }
-    return Make.ok(undefined);
-  };
+    throw e;
+  }
 }
 
 export function makeString(

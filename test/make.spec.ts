@@ -62,7 +62,7 @@ describe('makeOneOf', () => {
 });
 
 describe('registerFormat', () => {
-  it ('throws for duplicate registers', () => {
+  it('throws for duplicate registers', () => {
     make.registerFormat('duplicate-register', () => make.Make.ok(undefined));
     expect(() => {
       make.registerFormat('duplicate-register', () => make.Make.ok(undefined));
@@ -91,7 +91,9 @@ describe('makeString', () => {
   });
 
   it('rejects if format rejects', () => {
-    make.registerFormat('some-rejecting-format', () => make.Make.error([{ path: [], error: 'some error' }]));
+    make.registerFormat('some-rejecting-format', () =>
+      make.Make.error([{ path: [], error: 'some error' }])
+    );
     const fun = make.makeString('some-rejecting-format');
     expect(fun('b').errors[0].error).toEqual('some error');
   });

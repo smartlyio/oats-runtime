@@ -15,7 +15,7 @@
     "clean": "yarn clean:dist && rm -f ./tmp/*.ts",
     "clean:dist": "rm -rf ./dist",
     "build": "yarn clean && yarn oas && yarn tsc && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc --noEmit",
-    "prepublish": "yarn lint && yarn test && yarn tsc --noEmit"
+    "prepublish": "yarn build"
   },
   "repository": {
     "type": "git",

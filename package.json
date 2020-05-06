@@ -1,6 +1,6 @@
 {
   "name": "@smartlyio/oats-runtime",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "license": "MIT",
   "description": "Runtime for Oats a Openapi3 based generator for typescript aware servers and clients",
   "private": false,
@@ -15,7 +15,7 @@
     "clean": "yarn clean:dist && rm -f ./tmp/*.ts",
     "clean:dist": "rm -rf ./dist",
     "build": "yarn clean && yarn oas && yarn tsc && yarn link && yarn link @smartlyio/oats-runtime && yarn lint && yarn test && yarn tsc --noEmit",
-    "prepublish": "yarn build"
+    "prepublish": "yarn lint && yarn test && yarn tsc --noEmit"
   },
   "repository": {
     "type": "git",

@@ -113,6 +113,55 @@ describe('reflection-type', () => {
       expect(mapped.items2).toEqual(['got: value2', 'got: value3']);
     });
 
+    it('allows named alieses in between', () => {
+      const target: reflectionType.NamedTypeDefinition<string> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: null,
+        definition: {
+          type: 'string'
+        }
+      };
+
+      const middle2: reflectionType.NamedTypeDefinition<unknown> = {
+        maker: 1 as any,
+        name: 'middle',
+        isA: null,
+        definition: {
+          type: 'named',
+          reference: target
+        }
+      };
+
+      const middle: reflectionType.NamedTypeDefinition<unknown> = {
+        maker: 1 as any,
+        name: 'middle',
+        isA: null,
+        definition: {
+          type: 'named',
+          reference: middle2
+        }
+      };
+      const root: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: ((value: any) => !!value.item) as any,
+        definition: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            item: {
+              value: { type: 'named', reference: middle },
+              required: false
+            }
+          }
+        }
+      };
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map({ item: 'value' }, leaf => 'got: ' + leaf);
+      expect(mapped.item).toEqual('got: value');
+    });
+
     it('allows arrays in inner path', () => {
       const target: reflectionType.NamedTypeDefinition<string> = {
         maker: 1 as any,

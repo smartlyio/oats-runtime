@@ -62,6 +62,38 @@ describe('reflection-type', () => {
       isA: null,
       maker: 1 as any
     };
+
+    it('allows arrays in path', () => {
+      const target: reflectionType.NamedTypeDefinition<string> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: null,
+        definition: {
+          type: 'string'
+        }
+      };
+
+      const root: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: null,
+        definition: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            items: {
+              value: {
+                type: 'array',
+                items: { type: 'named', reference: target }
+              },
+              required: false
+            }
+          }
+        }
+      };
+      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+    });
+
     it('allows nested named objects', () => {
       const middle: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,

@@ -108,7 +108,10 @@ describe('reflection-type', () => {
         }
       };
       const traversal = reflectionType.Traversal.compile(root, target);
-      const mapped = traversal.map({ items: ['value'], items2: ['value2', 'value3'] }, leaf => 'got: ' + leaf);
+      const mapped = traversal.map(
+        { items: ['value'], items2: ['value2', 'value3'] },
+        leaf => 'got: ' + leaf
+      );
       expect(mapped.items).toEqual(['got: value']);
       expect(mapped.items2).toEqual(['got: value2', 'got: value3']);
     });

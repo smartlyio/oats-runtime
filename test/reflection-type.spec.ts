@@ -63,7 +63,57 @@ describe('reflection-type', () => {
       maker: 1 as any
     };
 
-    it('allows arrays in path', () => {
+    it('allows named arrays', () => {
+      const target: reflectionType.NamedTypeDefinition<string> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: null,
+        definition: {
+          type: 'string'
+        }
+      };
+
+      const middle: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'inner',
+        isA: null,
+        definition: {
+          type: 'array',
+          items: { type: 'named', reference: target }
+        }
+      };
+      const root: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: ((value: any) => !!value.items) as any,
+        definition: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            items: {
+              value: {
+                type: 'named',
+                reference: middle
+              },
+              required: true
+            },
+            items2: {
+              value: {
+                type: 'named',
+                reference: middle
+              },
+              required: true
+            }
+          }
+        }
+      };
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map({ items: ['value'], items2: ['value2', 'value3'] }, leaf => 'got: ' + leaf);
+      expect(mapped.items).toEqual(['got: value']);
+      expect(mapped.items2).toEqual(['got: value2', 'got: value3']);
+    });
+
+    it('allows arrays in inner path', () => {
       const target: reflectionType.NamedTypeDefinition<string> = {
         maker: 1 as any,
         name: 'root',
@@ -76,7 +126,7 @@ describe('reflection-type', () => {
       const root: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,
         name: 'root',
-        isA: null,
+        isA: ((value: any) => !!value.items) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
@@ -91,7 +141,9 @@ describe('reflection-type', () => {
           }
         }
       };
-      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map({ items: ['value'] }, leaf => 'got: ' + leaf);
+      expect(mapped.items).toEqual(['got: value']);
     });
 
     it('allows nested named objects', () => {

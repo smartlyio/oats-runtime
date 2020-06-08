@@ -183,7 +183,10 @@ export class Traversal<Root, Leaf> {
       // we can only find objects with isA during traversal
       // todo: we could relax this a bit by finding the unambiguous parent of parent if there is one
       parents.forEach(parent =>
-        assert(parent.isA, 'nearest containing named thing is not an object ' + parent.name)
+        assert(
+          parent.isA || parent.definition.type === 'array',
+          'nearest containing named thing is not an object ' + parent.name
+        )
       );
     }
   }

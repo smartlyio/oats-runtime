@@ -242,7 +242,7 @@ describe('reflection-type', () => {
       const root: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,
         name: 'X',
-        isA: 1 as any,
+        isA: ((v: any) => !!v.field) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
@@ -261,14 +261,16 @@ describe('reflection-type', () => {
           }
         }
       };
-      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const result = traversal.map({ xx: 'xx', field: 'target' }, value => 'got ' + value);
+      expect(result).toEqual({ xx: 'xx', field: 'got target' });
     });
 
     it('allows singleton options', () => {
       const root: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,
         name: 'X',
-        isA: 1 as any,
+        isA: ((v: any) => v.options) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
@@ -283,7 +285,9 @@ describe('reflection-type', () => {
           }
         }
       };
-      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const result = traversal.map({ options: 'target' }, value => 'got ' + value);
+      expect(result).toEqual({ options: 'got target' });
     });
 
     it('rejects if any path is ambiguous', () => {

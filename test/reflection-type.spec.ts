@@ -322,7 +322,7 @@ describe('reflection-type', () => {
       const root: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,
         name: 'X',
-        isA: 1 as any,
+        isA: ((v: any) => v && v.hasOwnProperty('options')) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
@@ -337,7 +337,12 @@ describe('reflection-type', () => {
           }
         }
       };
-      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map({ options: 'value' }, leaf => 'got: ' + leaf);
+      expect(mapped.options).toEqual('got: value');
+
+      const mappedNull = traversal.map({ options: null }, leaf => 'got: ' + leaf);
+      expect(mappedNull.options).toEqual(null);
     });
 
     it('rejects compile if nearest named thing is not an object', () => {

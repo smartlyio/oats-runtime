@@ -198,16 +198,83 @@ describe('reflection-type', () => {
       expect(mapped.items).toEqual(['got: value']);
     });
 
-    it('allows nested named objects', () => {
-      const middle: reflectionType.NamedTypeDefinition<any> = {
+    it('allows recursive structures', () => {
+      const middle: reflectionType.NamedTypeDefinition<any> = {} as any;
+      Object.assign(middle, {
         maker: 1 as any,
         name: 'middle',
-        isA: 1 as any,
+        isA: ((v: any) => v.middleField) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
           properties: {
-            options: {
+            recursive: {
+              value: { type: 'named', reference: middle },
+              required: false
+            },
+            noHit: {
+              value: { type: 'string' },
+              required: false
+            },
+            middleField: {
+              value: {
+                type: 'union',
+                options: [{ type: 'named', reference: target }]
+              },
+              required: false
+            }
+          }
+        }
+      });
+      const root: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'root',
+        isA: ((v: any) => v.rootField) as any,
+        definition: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            rootField: {
+              value: {
+                type: 'union',
+                options: [{ type: 'named', reference: middle }]
+              },
+              required: false
+            }
+          }
+        }
+      };
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map(
+        {
+          rootField: {
+            middleField: 'value',
+            noHit: 'no hit',
+            recursive: { middleField: 'recursive value', noHit: 'recursive no hit' }
+          }
+        },
+        leaf => 'got: ' + leaf
+      );
+      expect(mapped.rootField).toEqual({
+        middleField: 'got: value',
+        noHit: 'no hit',
+        recursive: {
+          middleField: 'got: recursive value',
+          noHit: 'recursive no hit'
+        }
+      });
+    });
+
+    it('allows nested named objects', () => {
+      const middle: reflectionType.NamedTypeDefinition<any> = {
+        maker: 1 as any,
+        name: 'middle',
+        isA: ((v: any) => v.middleField) as any,
+        definition: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            middleField: {
               value: {
                 type: 'union',
                 options: [{ type: 'named', reference: target }]
@@ -220,12 +287,12 @@ describe('reflection-type', () => {
       const root: reflectionType.NamedTypeDefinition<any> = {
         maker: 1 as any,
         name: 'root',
-        isA: null,
+        isA: ((v: any) => v.rootField) as any,
         definition: {
           type: 'object',
           additionalProperties: false,
           properties: {
-            options: {
+            rootField: {
               value: {
                 type: 'union',
                 options: [{ type: 'named', reference: middle }]
@@ -235,7 +302,9 @@ describe('reflection-type', () => {
           }
         }
       };
-      expect(() => reflectionType.Traversal.compile(root, target)).not.toThrow();
+      const traversal = reflectionType.Traversal.compile(root, target);
+      const mapped = traversal.map({ rootField: { middleField: 'value' } }, leaf => 'got: ' + leaf);
+      expect(mapped.rootField.middleField).toEqual('got: value');
     });
 
     it('allows target at second field', () => {

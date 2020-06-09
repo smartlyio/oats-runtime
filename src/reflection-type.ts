@@ -112,8 +112,7 @@ export class Traversal<Root, Leaf> {
     private readonly leaf: NamedTypeDefinition<Leaf>
   ) {
     calculateReverseReach(new Set(), this.cache, this.root, this.leaf, false);
-    const ancestors = this.ancestorNamedObjects(this.leaf, new Set());
-    this.cachedAncestors = this.dedupePaths(ancestors);
+    this.cachedAncestors = this.ancestorNamedObjects(this.leaf, new Set());
   }
 
   private dedupePaths(ancestors: Map<NamedTypeDefinition<unknown>, Path[]>) {
@@ -218,7 +217,7 @@ export class Traversal<Root, Leaf> {
         }
       });
     }
-    return allAncestors;
+    return this.dedupePaths(allAncestors);
   }
 }
 

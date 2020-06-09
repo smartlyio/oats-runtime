@@ -153,9 +153,8 @@ export class Traversal<Root, Leaf> {
   }
 
   private paths(value: any): Path[] {
-    const ancestors = this.cachedAncestors;
     const paths: Path[] = [];
-    for (const [ancestor, pathsFromAncestor] of ancestors.entries()) {
+    for (const [ancestor, pathsFromAncestor] of this.cachedAncestors.entries()) {
       if (ancestor.isA && ancestor.isA(value)) {
         paths.push(...pathsFromAncestor);
       }
@@ -164,9 +163,8 @@ export class Traversal<Root, Leaf> {
   }
 
   private matcher(): (a: any) => boolean {
-    const ancestors = this.ancestorNamedObjects(this.leaf, new Set());
-    return function match(value: any) {
-      for (const ancestor of ancestors.keys()) {
+    return (value: any) => {
+      for (const ancestor of this.cachedAncestors.keys()) {
         if (ancestor.isA && ancestor.isA(value)) {
           return true;
         }

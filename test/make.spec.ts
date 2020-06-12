@@ -68,7 +68,7 @@ describe('makeOneOf', () => {
         make.makeObject({ b: make.makeAny() })
       )
     });
-    const result = fun({ root: { foo: 'x' }});
+    const result = fun({ root: { foo: 'x' } });
     expect(result.isError()).toBeTruthy();
     expect(result.errors.length).toEqual(1);
     const expected = `root: no option of oneOf matched

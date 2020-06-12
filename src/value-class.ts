@@ -3,8 +3,7 @@ import { NamedTypeDefinition } from './reflection-type';
 export type Branded<A, BrandTag> = A & Brand<BrandTag>;
 
 export class Brand<B> {
-  // @ts-ignore
-  private valueClassBrand: B; // branding, DO NOT ACCESS
+  public readonly valueClassBrand!: B; // branding, DO NOT ACCESS
 }
 
 function asPlainObject(value: any): any {
@@ -22,7 +21,7 @@ function asPlainObject(value: any): any {
 
 export class ValueClass<Shape, BrandTag> extends Brand<BrandTag> {
   public static reflection: NamedTypeDefinition<ValueClass<any, any>>;
-  private Shape!: Shape;
+  public readonly valueClassShape!: Shape; // stops TypeScript from ignoring the "Shape" type, DO NOT ACCESS
 }
 
 type WritableArray<T> = Array<Writable<T>>;

@@ -688,5 +688,64 @@ describe('reflection-type', () => {
         });
       }
     });
+
+    describe('getAll', () => {
+      it('returns all leaf objects of given type', () => {
+        const middle: reflectionType.NamedTypeDefinition<any> = {} as any;
+        Object.assign(middle, {
+          maker: 1 as any,
+          name: 'middle',
+          isA: ((v: any) => v.middleField) as any,
+          definition: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              recursive: {
+                value: { type: 'named', reference: middle },
+                required: false
+              },
+              noHit: {
+                value: { type: 'string' },
+                required: false
+              },
+              middleField: {
+                value: {
+                  type: 'union',
+                  options: [{ type: 'named', reference: target }]
+                },
+                required: false
+              }
+            }
+          }
+        });
+        const root: reflectionType.NamedTypeDefinition<any> = {
+          maker: 1 as any,
+          name: 'root',
+          isA: ((v: any) => v.rootField) as any,
+          definition: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              rootField: {
+                value: {
+                  type: 'union',
+                  options: [{ type: 'named', reference: middle }]
+                },
+                required: false
+              }
+            }
+          }
+        };
+        const traversal = reflectionType.Traversal.compile(root, target);
+        const leafs = traversal.getAll({
+          rootField: {
+            middleField: 'value',
+            noHit: 'no hit',
+            recursive: { middleField: 'recursive value', noHit: 'recursive no hit' }
+          }
+        });
+        expect(leafs).toEqual(['value', 'recursive value']);
+      });
+    });
   });
 });

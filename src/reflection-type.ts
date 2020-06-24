@@ -151,6 +151,15 @@ export class Traversal<Root, Leaf> {
     });
   }
 
+  getAll(value: Root) {
+    const leafs: Leaf[] = [];
+    this.map(value, (leaf: Leaf) => {
+      leafs.push(leaf);
+      return leaf;
+    });
+    return leafs;
+  }
+
   private paths(value: any): Path[] {
     const paths: Path[] = [];
     for (const [ancestor, pathsFromAncestor] of this.cachedAncestors.entries()) {

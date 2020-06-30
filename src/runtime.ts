@@ -93,6 +93,31 @@ function mapInternal<A extends ValueType, T extends ValueType>(
   return value;
 }
 
+export function filterDeep<A extends ValueType, T extends ValueType>(
+  value: A,
+  predicate: (a: any) => a is T
+): readonly A[] {
+  return filterInternal(value, predicate);
+}
+
+function filterInternal<A extends ValueType, T extends ValueType>(
+  value: A,
+  predicate: (a: any) => a is T
+): readonly A[] {
+  if (predicate(value)) {
+    return [value];
+  }
+  if (Array.isArray(value)) {
+    return value.reduce((acc, item) => acc.concat(filterInternal(item, predicate)), []).flat();
+  }
+  if (value && typeof value === 'object') {
+    return Object.values(value)
+      .reduce((acc, item) => acc.concat(filterInternal(item, predicate)), [])
+      .flat();
+  }
+  return [];
+}
+
 export async function pmap<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T,

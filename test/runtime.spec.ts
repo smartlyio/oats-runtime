@@ -2,7 +2,7 @@ import * as jsc from 'jsverify';
 import * as _ from 'lodash';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { make, pmap, set, map, filterDeep } from '../src/runtime';
+import { make, pmap, set, map, getAll } from '../src/runtime';
 import { TestClass } from './test-class';
 
 const getWithTraversalPath = (dict: any, path: string[]): any => {
@@ -213,16 +213,16 @@ describe('map', () => {
   });
 });
 
-describe('filterDeep', () => {
+describe('getAll', () => {
   jsc.property('returns empty array when no matches', jsc.json, async dict => {
-    const filtered = await filterDeep(dict, (_n: any): _n is string => false);
-    expect(filtered).toEqual([]);
+    const items = await getAll(dict, (_n: any): _n is string => false);
+    expect(items).toEqual([]);
     return true;
   });
 
   jsc.property('returns full object in array when already matches root', jsc.json, async dict => {
-    const filtered = await filterDeep(dict, (_n: any): _n is string => true);
-    expect(filtered).toEqual(dict);
+    const items = await getAll(dict, (_n: any): _n is string => true);
+    expect(items).toEqual(dict);
     return true;
   });
 
@@ -230,8 +230,8 @@ describe('filterDeep', () => {
     'matches array filter with one dimensional arrays',
     jsc.array(jsc.oneof([jsc.asciistring, jsc.integer, jsc.bool])),
     async arr => {
-      const filtered = await filterDeep(arr, (n: any): n is string => _.isString(n));
-      expect(filtered).toEqual(arr.filter(item => _.isString(item)));
+      const items = await getAll(arr, (n: any): n is string => _.isString(n));
+      expect(items).toEqual(arr.filter(item => _.isString(item)));
       return true;
     }
   );
@@ -240,8 +240,8 @@ describe('filterDeep', () => {
     'matches Object.values.filter with one dimensional objects',
     jsc.dict(jsc.oneof([jsc.asciistring, jsc.integer, jsc.bool])),
     async dict => {
-      const filtered = await filterDeep(dict, (n: any): n is string => _.isString(n));
-      expect(filtered).toEqual(Object.values(dict).filter(item => _.isString(item)));
+      const items = await getAll(dict, (n: any): n is string => _.isString(n));
+      expect(items).toEqual(Object.values(dict).filter(item => _.isString(item)));
       return true;
     }
   );
@@ -250,8 +250,8 @@ describe('filterDeep', () => {
     'matches single primitives',
     jsc.oneof([jsc.asciistring, jsc.integer, jsc.bool]),
     async item => {
-      const filtered = await filterDeep(item, (n: any): n is string => _.isString(n));
-      expect(filtered).toEqual(_.isString(item) ? [item] : []);
+      const items = await getAll(item, (n: any): n is string => _.isString(n));
+      expect(items).toEqual(_.isString(item) ? [item] : []);
       return true;
     }
   );
@@ -268,7 +268,7 @@ describe('filterDeep', () => {
         }
       }
     };
-    const filtered = filterDeep(value, (n: any): n is string => typeof n === 'string');
-    expect(filtered).toEqual(['hit1', 'hit2', 'hit3', 'hit4']);
+    const items = getAll(value, (n: any): n is string => typeof n === 'string');
+    expect(items).toEqual(['hit1', 'hit2', 'hit3', 'hit4']);
   });
 });

@@ -93,7 +93,7 @@ function mapInternal<A extends ValueType, T extends ValueType>(
   return value;
 }
 
-export function filterDeep<A extends ValueType, T extends ValueType>(
+export function getAll<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T
 ): readonly A[] {

@@ -256,19 +256,18 @@ describe('getAll', () => {
     }
   );
 
-  it('returns all nested values with the property', () => {
-    const value = {
-      a: ['hit1', 2, 3, [1, 'hit2', 3]],
-      b: {
-        c: 1,
-        d: 'hit3',
-        e: {
-          f: 1,
-          g: 'hit4'
-        }
-      }
-    };
-    const items = getAll(value, (n: any): n is string => typeof n === 'string');
-    expect(items).toEqual(['hit1', 'hit2', 'hit3', 'hit4']);
-  });
+  jsc.property(
+    'returns all nested values with the property',
+    jsc.oneof([jsc.asciistring, jsc.integer, jsc.bool]),
+    async value => {
+      const predicate = (n: any): n is string => typeof n === 'string';
+      const found: any[] = [];
+      map(value, predicate, a => {
+        found.push(a);
+        return a;
+      });
+      expect(getAll(value, predicate)).toEqual(found);
+      return true;
+    }
+  );
 });

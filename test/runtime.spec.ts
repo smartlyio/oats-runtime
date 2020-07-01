@@ -222,7 +222,7 @@ describe('getAll', () => {
 
   jsc.property('returns full object in array when already matches root', jsc.json, async dict => {
     const items = await getAll(dict, (_n: any): _n is string => true);
-    expect(items).toEqual(dict);
+    expect(items).toEqual([dict]);
     return true;
   });
 

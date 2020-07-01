@@ -97,10 +97,10 @@ export function getAll<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T
 ): readonly A[] {
-  return filterInternal(value, predicate);
+  return getAllInternal(value, predicate);
 }
 
-function filterInternal<A extends ValueType, T extends ValueType>(
+function getAllInternal<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T
 ): readonly A[] {
@@ -108,11 +108,11 @@ function filterInternal<A extends ValueType, T extends ValueType>(
     return [value];
   }
   if (Array.isArray(value)) {
-    return value.reduce((acc, item) => acc.concat(filterInternal(item, predicate)), []).flat();
+    return value.reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), []).flat();
   }
   if (value && typeof value === 'object') {
     return Object.values(value)
-      .reduce((acc, item) => acc.concat(filterInternal(item, predicate)), [])
+      .reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), [])
       .flat();
   }
   return [];

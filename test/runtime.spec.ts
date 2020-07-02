@@ -220,12 +220,6 @@ describe('getAll', () => {
     return true;
   });
 
-  jsc.property('returns full object in array when already matches root', jsc.json, async dict => {
-    const items = await getAll(dict, (_n: any): _n is string => true);
-    expect(items).toEqual([dict]);
-    return true;
-  });
-
   jsc.property(
     'matches array filter with one dimensional arrays',
     jsc.array(jsc.oneof([jsc.asciistring, jsc.integer, jsc.bool])),
@@ -257,7 +251,7 @@ describe('getAll', () => {
   );
 
   jsc.property('returns all nested values with the property', jsc.json, async value => {
-    const predicate = (n: any): n is string => typeof n === 'string';
+    const predicate = (n: any): n is object => typeof n === 'object';
     const found: any[] = [];
     map(value, predicate, a => {
       found.push(a);

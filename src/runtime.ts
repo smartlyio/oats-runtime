@@ -104,18 +104,23 @@ function getAllInternal<A extends ValueType, T extends ValueType>(
   value: A,
   predicate: (a: any) => a is T
 ): readonly A[] {
+  const match: A[] = [];
   if (predicate(value)) {
-    return [value];
+    match.push(value);
   }
   if (Array.isArray(value)) {
-    return value.reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), []).flat();
+    return [
+      ...match,
+      ...value.reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), [])
+    ];
   }
   if (value && typeof value === 'object') {
-    return Object.values(value)
-      .reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), [])
-      .flat();
+    return [
+      ...match,
+      ...Object.values(value).reduce((acc, item) => acc.concat(getAllInternal(item, predicate)), [])
+    ];
   }
-  return [];
+  return match;
 }
 
 export async function pmap<A extends ValueType, T extends ValueType>(

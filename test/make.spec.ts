@@ -161,7 +161,9 @@ describe('makeObject', () => {
       obj.__proto__ = make.makeNumber();
       const fun = make.makeObject(obj);
       const value = JSON.parse(`{"__proto__": 1}`);
-      expect(fun(value).errors[0].error).toEqual('Using __proto__ as field of an object is not allowed');
+      expect(fun(value).errors[0].error).toEqual(
+        'Using __proto__ as field of an object is not allowed'
+      );
     });
 
     it('disallows constructor', () => {
@@ -169,19 +171,25 @@ describe('makeObject', () => {
       obj.constructor = make.makeNumber();
       const fun = make.makeObject(obj);
       const value = JSON.parse(`{"constructor": 1}`);
-      expect(fun(value).errors[0].error).toEqual('Using constructor as field of an object is not allowed');
+      expect(fun(value).errors[0].error).toEqual(
+        'Using constructor as field of an object is not allowed'
+      );
     });
 
     it('disallows __proto__ in additionalFields', () => {
       const fun = make.makeObject({}, make.makeNumber());
       const value = JSON.parse(`{"__proto__": 1}`);
-      expect(fun(value).errors[0].error).toEqual('Using __proto__ as objects additional field is not allowed.');
+      expect(fun(value).errors[0].error).toEqual(
+        'Using __proto__ as objects additional field is not allowed.'
+      );
     });
 
     it('disallows constructor in additionalFields', () => {
       const fun = make.makeObject({}, make.makeNumber());
       const value = JSON.parse(`{"constructor": 1}`);
-      expect(fun(value).errors[0].error).toEqual('Using constructor as objects additional field is not allowed.');
+      expect(fun(value).errors[0].error).toEqual(
+        'Using constructor as objects additional field is not allowed.'
+      );
     });
   });
 

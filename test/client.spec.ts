@@ -25,6 +25,13 @@ describe('ClientEndpoint', () => {
     });
   });
 
+  it('disallows unknown arguments with optional query parameters', () => {
+    void mock<client.ClientEndpoint<void, { a?: string }, void, typeof response>>()({
+      // @ts-expect-error
+      query: { k: 'some string' }
+    });
+  });
+
   it('allows passing no field when all query parameters are optional', () => {
     void mock<client.ClientEndpoint<void, { a?: string }, void, typeof response>>()();
   });

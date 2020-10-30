@@ -3,8 +3,16 @@ import * as assert from 'assert';
 import safe from '@smartlyio/safe-navigation';
 
 type HeaderProp<H, Next> = H extends void ? Next : { headers: H } & Next;
-type QueryProp<Q, Next> = Q extends void ? Next : { query: Q } & Next;
+type QueryProp<Q, Next> = true extends HasOnlyOptionalTypes<Q>
+  ? ({ query?: Q } & Next) | Next
+  : { query: Q } & Next;
 type BodyProp<B> = B extends void ? object : { body: B };
+
+type HasOnlyOptionalTypes<O> = {
+  [K in keyof O]?: O[K];
+} extends O
+  ? true
+  : false;
 
 export type ClientArg<
   H extends server.Headers | void,
@@ -17,7 +25,9 @@ export type ClientEndpoint<
   Q extends server.Query | void,
   B extends server.RequestBody<any> | void,
   R extends server.Response<number, any, any>
-> = object extends ClientArg<H, Q, B> ? () => Promise<R> : (ctx: ClientArg<H, Q, B>) => Promise<R>;
+> = object extends ClientArg<H, Q, B>
+  ? (ctx?: ClientArg<H, Q, B>) => Promise<R>
+  : (ctx: ClientArg<H, Q, B>) => Promise<R>;
 
 type PathParam = (param: string) => ClientSpec | ClientEndpoint<any, any, any, any>;
 export interface ClientSpec {

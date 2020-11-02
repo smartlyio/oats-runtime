@@ -8,11 +8,7 @@ type QueryProp<Q, Next> = true extends HasOnlyOptionalTypes<Q>
   : { query: Q } | ({ query: Q } & Next);
 type BodyProp<B> = B extends void ? void : { body: B };
 
-type HasOnlyOptionalTypes<O> = {
-  [K in keyof O]?: O[K];
-} extends O
-  ? true
-  : false;
+type HasOnlyOptionalTypes<O> = Partial<O> extends O ? true : false;
 
 export type ClientArg<
   H extends server.Headers | void,

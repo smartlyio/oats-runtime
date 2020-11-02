@@ -55,6 +55,11 @@ describe('ClientEndpoint', () => {
     });
   });
 
+  it('requires query', () => {
+    // @ts-expect-error
+    void mock<client.ClientEndpoint<void, { a: string }, void, typeof response>>()();
+  });
+
   it('requires query when body is present', () => {
     // @ts-expect-error
     void mock<client.ClientEndpoint<void, { a: string }, typeof body, typeof response>>()({

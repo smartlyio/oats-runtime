@@ -332,7 +332,7 @@ export function makeObject<
         }
         maker = maker.optional;
       }
-      const propResult: Make<any> = maker(value[index]);
+      const propResult: Make<any> = maker(value[index], opts);
       if (propResult.isError()) {
         return propResult.errorPath(index);
       }

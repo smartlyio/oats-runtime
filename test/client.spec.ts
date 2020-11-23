@@ -51,6 +51,12 @@ describe('ClientEndpoint', () => {
     void mock<client.ClientEndpoint<void, void, typeof body | void, typeof response>>()();
   });
 
+  it('allows body when body can be void', () => {
+    void mock<client.ClientEndpoint<void, void, typeof body | void, typeof response>>()({
+      body
+    });
+  });
+
   it('requires body with correct type', () => {
     void mock<client.ClientEndpoint<void, void, typeof body, typeof response>>()({
       // @ts-expect-error

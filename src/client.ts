@@ -2,7 +2,7 @@ import * as server from './server';
 import * as assert from 'assert';
 import safe from '@smartlyio/safe-navigation';
 
-type HasOnlyOptionalTypes<O> = Partial<O> extends O ? true : false;
+type HasOnlyOptionalTypes<O> = Partial<O> extends O ? true : O extends void ? true : false;
 
 type MakeOptional<O, K extends string> = true extends HasOnlyOptionalTypes<O>
   ? { [P in K]?: O }

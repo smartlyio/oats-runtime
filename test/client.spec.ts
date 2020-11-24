@@ -47,7 +47,7 @@ describe('ClientEndpoint', () => {
     void mock<client.ClientEndpoint<void, void, typeof body, typeof response>>()();
   });
 
-  it('allows no body when boy can be void', () => {
+  it('allows no body when body can be void', () => {
     void mock<client.ClientEndpoint<void, void, typeof body | void, typeof response>>()();
   });
 

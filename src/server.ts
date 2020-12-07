@@ -2,12 +2,13 @@ import * as assert from 'assert';
 import safeNavigation from '@smartlyio/safe-navigation';
 import { Make, Maker, ValidationError, validationErrorPrinter } from './make';
 
-export interface Response<Status extends number, ContentType, Value> {
+export interface Response<Status extends number, ContentType, Value, Headers extends object> {
   status: Status;
   value: {
     contentType: ContentType;
     value: Value;
   };
+  headers: Headers;
 }
 
 export interface RequestBody<A> {

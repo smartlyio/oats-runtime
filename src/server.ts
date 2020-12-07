@@ -53,7 +53,7 @@ export type Endpoint<
   P extends Params | void,
   Q extends Query | void,
   Body extends RequestBody<any> | void,
-  R extends Response<number, any, any>,
+  R extends Response<number, any, any, any>,
   RC extends RequestContext
 > = (ctx: ServerEndpointArg<H, P, Q, Body, RC>) => Promise<R>;
 
@@ -62,7 +62,7 @@ export type SafeEndpoint = Endpoint<
   Params | undefined,
   Query | undefined,
   RequestBody<any> | undefined,
-  Response<number, any, any>,
+  Response<number, any, any, any>,
   RequestContext
 >;
 
@@ -134,7 +134,7 @@ export function safe<
   P extends Params,
   Q extends Query,
   Body extends RequestBody<any>,
-  R extends Response<any, any, any>,
+  R extends Response<any, any, any, any>,
   RC extends RequestContext
 >(
   headers: Maker<any, H>,
@@ -143,7 +143,14 @@ export function safe<
   body: Maker<any, Body>,
   response: Maker<any, R>,
   endpoint: Endpoint<H, P, Q, Body, R, RC>
-): Endpoint<Headers, Params, Query, RequestBody<any>, Response<number, any, any>, RequestContext> {
+): Endpoint<
+  Headers,
+  Params,
+  Query,
+  RequestBody<any>,
+  Response<number, any, any, any>,
+  RequestContext
+> {
   return async ctx => {
     const result = await endpoint({
       path: ctx.path,

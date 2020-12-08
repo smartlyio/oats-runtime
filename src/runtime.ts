@@ -7,7 +7,7 @@ import * as reflection from './reflection-type';
 export { make, server, client, valueClass, reflection };
 
 export const noContentContentType = 'oatsNoContent' as const;
-export function noContent<Status extends number, Headers extends object>(
+export function noContent<Status extends number, Headers extends Record<string, any>>(
   status: Status,
   headers?: Headers
 ): server.Response<Status, typeof noContentContentType, null, Headers> {
@@ -21,7 +21,7 @@ export function noContent<Status extends number, Headers extends object>(
   };
 }
 
-export function json<Status extends number, Value, Headers extends object>(
+export function json<Status extends number, Value, Headers extends Record<string, any>>(
   status: Status,
   value: Value,
   headers?: Headers
@@ -36,7 +36,7 @@ export function json<Status extends number, Value, Headers extends object>(
   };
 }
 
-export function text<Status extends number, Value, Headers extends object>(
+export function text<Status extends number, Value, Headers extends Record<string, any>>(
   status: Status,
   value: Value,
   headers?: Headers

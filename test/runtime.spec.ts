@@ -2,7 +2,7 @@ import * as jsc from 'jsverify';
 import * as _ from 'lodash';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import { make, pmap, set, map, getAll } from '../src/runtime';
+import { make, pmap, set, map, getAll, json } from '../src/runtime';
 import { TestClass } from './test-class';
 
 const getWithTraversalPath = (dict: any, path: string[]): any => {
@@ -10,6 +10,34 @@ const getWithTraversalPath = (dict: any, path: string[]): any => {
     return toBeTraversed[nextHop];
   }, dict);
 };
+describe('responses', () => {
+  it('returns headers with correct type', () => {
+    const res = json(100, null, { value: 1 });
+
+    // @ts-expect-error
+    res.headers.wrongValue;
+    expect(res.headers.value).toEqual(1);
+  });
+
+  it('defaults headers to record type if none are given', () => {
+    const res = json(100, null);
+
+    res.headers.anyValue;
+    res.headers.value;
+    expect(res.headers).toEqual({});
+  });
+
+  it('ensure explicitly typed generic is enforced', () => {
+    // @ts-expect-error
+    json<number, null, { value: number }>(100, null, { wrongValue: 'uh oh' });
+  });
+
+  it('always returns headers even if undefined given', () => {
+    const res = json(100, null, undefined);
+    expect(res.headers).toEqual({});
+  });
+});
+
 describe('pmap', () => {
   jsc.property('leaves object unchanged when no matches', jsc.json, async dict => {
     const clone = _.cloneDeep(dict);

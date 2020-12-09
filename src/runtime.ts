@@ -7,47 +7,48 @@ import * as reflection from './reflection-type';
 export { make, server, client, valueClass, reflection };
 
 export const noContentContentType = 'oatsNoContent' as const;
-export function noContent<Status extends number, Headers extends Record<string, any>>(
-  status: Status,
-  headers?: Headers
-): server.Response<Status, typeof noContentContentType, null, Headers> {
+
+export function setHeaders<
+  Status extends number,
+  ConntentType,
+  Value,
+  Headers extends Record<string, any>
+>(
+  response: server.Response<Status, ConntentType, Value, Record<string, any>>,
+  headers: Headers
+): server.Response<Status, ConntentType, Value, Headers> {
+  return { ...response, headers };
+}
+
+export function noContent<Status extends number>(
+  status: Status
+): server.Response<Status, typeof noContentContentType, null, Record<string, any>> {
   return {
     status,
-    value: {
-      contentType: noContentContentType,
-      value: null
-    },
-    headers: headers ?? ({} as Headers)
+    value: { contentType: noContentContentType, value: null },
+    headers: {}
   };
 }
 
-export function json<Status extends number, Value, Headers extends Record<string, any>>(
+export function json<Status extends number, Value>(
   status: Status,
-  value: Value,
-  headers?: Headers
-): server.Response<Status, 'application/json', Value, Headers> {
+  value: Value
+): server.Response<Status, 'application/json', Value, Record<string, any>> {
   return {
     status,
-    value: {
-      contentType: 'application/json',
-      value
-    },
-    headers: headers ?? ({} as Headers)
+    value: { contentType: 'application/json', value },
+    headers: {}
   };
 }
 
-export function text<Status extends number, Value, Headers extends Record<string, any>>(
+export function text<Status extends number, Value>(
   status: Status,
-  value: Value,
-  headers?: Headers
-): server.Response<Status, 'text/plain', Value, Headers> {
+  value: Value
+): server.Response<Status, 'text/plain', Value, Record<string, any>> {
   return {
     status,
-    value: {
-      contentType: 'text/plain',
-      value
-    },
-    headers: headers ?? ({} as Headers)
+    value: { contentType: 'text/plain', value },
+    headers: {}
   };
 }
 

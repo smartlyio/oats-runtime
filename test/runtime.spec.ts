@@ -2,8 +2,7 @@ import * as jsc from 'jsverify';
 import * as _ from 'lodash';
 import * as assert from 'assert';
 import { promisify } from 'util';
-import * as server from '../src/server';
-import { make, pmap, set, map, getAll, json } from '../src/runtime';
+import { make, pmap, set, map, getAll, json, setHeaders } from '../src/runtime';
 import { TestClass } from './test-class';
 
 const getWithTraversalPath = (dict: any, path: string[]): any => {
@@ -11,9 +10,9 @@ const getWithTraversalPath = (dict: any, path: string[]): any => {
     return toBeTraversed[nextHop];
   }, dict);
 };
-describe('responses', () => {
+describe('setHeaders', () => {
   it('returns headers with correct type', () => {
-    const res = json(100, null, { value: 1 });
+    const res = setHeaders(json(100, null), { value: 1 });
 
     // @ts-expect-error
     res.headers.wrongValue;
@@ -28,31 +27,9 @@ describe('responses', () => {
     expect(res.headers).toEqual({});
   });
 
-  it('does not require headers when any record is accepted', () => {
-    json<number, null, Record<string, any>>(100, null);
-  });
-
-  it('infers empty headers', () => {
-    json(100, null);
-  });
-
-  function hasType<T>(t: T) {}
-
-  it('requires headers when those are mandatory', () => {
-    // @ts-expect-error
-    hasType<server.Response<100, 'application/json', null, { value: number }>>(
-      json<100, null, { value: number }>(100, null)
-    );
-  });
-
   it('ensure explicitly typed generic is enforced', () => {
     // @ts-expect-error
-    json<number, null, { value: number }>(100, null, { wrongValue: 'uh oh' });
-  });
-
-  it('always returns headers even if undefined given', () => {
-    const res = json(100, null, undefined);
-    expect(res.headers).toEqual({});
+    setHeaders<100, 'application/json', null, { wrongValue: 1 }>(json(100, null), { value: 1 });
   });
 });
 

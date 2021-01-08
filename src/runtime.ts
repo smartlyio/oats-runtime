@@ -8,6 +8,16 @@ export { make, server, client, valueClass, reflection };
 
 export const noContentContentType = 'oatsNoContent' as const;
 
+export type ShapeOf<A> = A extends string
+  ? string
+  : A extends number
+  ? number
+  : A extends boolean
+  ? boolean
+  : A extends Array<infer Item>
+  ? Array<ShapeOf<Item>>
+  : { [K in keyof A]: ShapeOf<A[K]> };
+
 export function setHeaders<
   Status extends number,
   ConntentType,
@@ -54,7 +64,7 @@ export function text<Status extends number, Value>(
 
 export function set<Cls>(
   to: Cls,
-  set: Cls extends valueClass.ValueClass<infer Shape, any> ? Partial<Shape> : never
+  set: Cls extends valueClass.ValueClass<any, any> ? Partial<ShapeOf<Cls>> : never
 ): make.Make<Cls> {
   return (to as any).constructor.make({ ...to, ...set });
 }

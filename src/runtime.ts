@@ -8,15 +8,25 @@ export { make, server, client, valueClass, reflection };
 
 export const noContentContentType = 'oatsNoContent' as const;
 
-export type ShapeOf<A> = A extends string
-  ? string
-  : A extends number
-  ? number
-  : A extends boolean
-  ? boolean
+type Scalar = number | string | boolean;
+
+const typeWitnessKey = Symbol();
+const tagKey = Symbol();
+
+type ScalarWithoutBrand<V> = V extends { [typeWitnessKey]: infer S } ? S : V;
+
+export type ShapeOf<A> = A extends Scalar
+  ? ScalarWithoutBrand<A>
+  : unknown extends A
+  ? unknown
   : A extends Array<infer Item>
   ? Array<ShapeOf<Item>>
   : { [K in keyof A]: ShapeOf<A[K]> };
+
+export type BrandedScalar<Type, Tag> = Type & {
+  [typeWitnessKey]: Type;
+  [tagKey]: Tag;
+};
 
 export function setHeaders<
   Status extends number,

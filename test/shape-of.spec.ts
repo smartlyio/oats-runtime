@@ -47,6 +47,20 @@ describe('ShapeOf', () => {
     assignableTo<runtime.ShapeOf<Value[]>>({});
   });
 
+  it('Shapes ReadonlyArrays', () => {
+    assignableTo<runtime.ShapeOf<readonly string[]>>(['a']);
+    // @ts-expect-error
+    assignableTo<runtime.ShapeOf<readonly string[]>>([1]);
+    // @ts-expect-error
+    assignableTo<runtime.ShapeOf<readonly string[]>>({});
+
+    assignableTo<readonly string[]>([] as runtime.ShapeOf<readonly string[]>);
+    assignableTo<readonly string[]>([] as runtime.ShapeOf<string[]>);
+    // @ts-expect-error
+    assignableTo<string[]>([] as runtime.ShapeOf<readonly string[]>);
+    assignableTo<string[]>([] as runtime.ShapeOf<string[]>);
+  });
+
   it('Shapes Objects', () => {
     assignableTo<runtime.ShapeOf<{ a: Value }>>({ a: 'a' });
     // @ts-expect-error

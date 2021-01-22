@@ -152,6 +152,16 @@ describe('makeArray', () => {
     const fun = make.makeArray(make.makeString());
     expect(fun(['a', 'b']).success()).toEqual(['a', 'b']);
   });
+  it('enforces min size if passed', () => {
+    const fun = make.makeArray(make.makeString(), 3);
+    expect(fun(['a', 'b']).errors[0].error).toMatch('expected an array of minimum length');
+  });
+  it('enforces max size if passed', () => {
+    const fun = make.makeArray(make.makeString(), undefined, 3);
+    expect(fun(['a', 'b', 'c', 'd']).errors[0].error).toMatch(
+      'expected an array of maximum length'
+    );
+  });
 });
 
 describe('makeObject', () => {

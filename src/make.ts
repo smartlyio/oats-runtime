@@ -244,10 +244,16 @@ export function makeBoolean() {
   return checkBoolean;
 }
 
-export function makeArray(maker: any) {
+export function makeArray(maker: any, minSize?: number, maxSize?: number) {
   return (value: any, opts?: MakeOptions) => {
     if (!Array.isArray(value)) {
       return getErrorWithValueMsg('expected an array', value);
+    }
+    if (minSize != null && value.length < minSize) {
+      return getErrorWithValueMsg(`expected an array of minimum length ${minSize}`, value);
+    }
+    if (maxSize != null && value.length > maxSize) {
+      return getErrorWithValueMsg(`expected an array of maximum length ${maxSize}`, value);
     }
     const result = [];
     for (let index = 0; index < value.length; index++) {

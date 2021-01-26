@@ -150,11 +150,11 @@ describe('makeAny', () => {
 describe('makeNumber', () => {
   it('enforces minimum if passed', () => {
     const fun = make.makeNumber(3);
-    expect(fun(2).errors[0].error).toMatch('expected a number greater than');
+    expect(fun(2).errors[0].error).toMatch('expected a number greater or equal to');
   });
   it('enforces maximum if passed', () => {
     const fun = make.makeNumber(undefined, 3);
-    expect(fun(4).errors[0].error).toMatch('expected a number smaller than');
+    expect(fun(4).errors[0].error).toMatch('expected a number smaller or equal to');
   });
 });
 

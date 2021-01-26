@@ -186,11 +186,11 @@ export function makeNumber(min?: number, max?: number): Maker<number, number> {
     if (typeof value !== 'number') {
       return getErrorWithValueMsg('expected a number', value);
     }
-    if (min != null && value < min) {
-      return getErrorWithValueMsg('expected a number greater than ' + min, value);
+    if (min != null && value <= min) {
+      return getErrorWithValueMsg('expected a number greater or equal to ' + min, value);
     }
-    if (max != null && value > max) {
-      return getErrorWithValueMsg('expected a number smaller than ' + max, value);
+    if (max != null && value >= max) {
+      return getErrorWithValueMsg('expected a number smaller or equal to ' + max, value);
     }
     return Make.ok(value);
   };

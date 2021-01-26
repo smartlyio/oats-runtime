@@ -181,23 +181,19 @@ export function makeString(
   };
 }
 
-function checkNumber(value: any): Make<number> {
-  if (typeof value !== 'number') {
-    return getErrorWithValueMsg('expected a number', value);
-  }
-  return Make.ok(value);
-}
-
-export function makeNumber(value?: number): Maker<number, number> {
-  if (value != null) {
-    return (v: number) => {
-      if (value !== v) {
-        return getErrorWithValueMsg('expected value ' + value, v);
-      }
-      return Make.ok(v);
-    };
-  }
-  return checkNumber;
+export function makeNumber(min?: number, max?: number): Maker<number, number> {
+  return (value: any) => {
+    if (typeof value !== 'number') {
+      return getErrorWithValueMsg('expected a number', value);
+    }
+    if (min != null && value < min) {
+      return getErrorWithValueMsg('expected a number greater than ' + min, value);
+    }
+    if (max != null && value > max) {
+      return getErrorWithValueMsg('expected a number smaller than ' + max, value);
+    }
+    return Make.ok(value);
+  };
 }
 
 function checkAny(value: any) {

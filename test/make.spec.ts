@@ -147,6 +147,17 @@ describe('makeAny', () => {
   });
 });
 
+describe('makeNumber', () => {
+  it('enforces minimum if passed', () => {
+    const fun = make.makeNumber(3);
+    expect(fun(2).errors[0].error).toMatch('expected a number greater than');
+  });
+  it('enforces maximum if passed', () => {
+    const fun = make.makeNumber(undefined, 3);
+    expect(fun(4).errors[0].error).toMatch('expected a number smaller than');
+  });
+});
+
 describe('makeArray', () => {
   it('keeps the order', () => {
     const fun = make.makeArray(make.makeString());

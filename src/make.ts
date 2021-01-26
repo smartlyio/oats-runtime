@@ -245,10 +245,10 @@ export function makeArray(maker: any, minSize?: number, maxSize?: number) {
     if (!Array.isArray(value)) {
       return getErrorWithValueMsg('expected an array', value);
     }
-    if (minSize != null && value.length < minSize) {
+    if (minSize != null && value.length <= minSize) {
       return getErrorWithValueMsg(`expected an array of minimum length ${minSize}`, value);
     }
-    if (maxSize != null && value.length > maxSize) {
+    if (maxSize != null && value.length >= maxSize) {
       return getErrorWithValueMsg(`expected an array of maximum length ${maxSize}`, value);
     }
     const result = [];

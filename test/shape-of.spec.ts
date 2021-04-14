@@ -22,12 +22,12 @@ function assignableTo<T>(_t: T) {
 }
 
 enum EnumTag {}
-class BrandedClass extends runtime.valueClass.ValueClass<never, EnumTag> {
+class BrandedClass extends runtime.valueClass.ValueClass<EnumTag> {
   a = 'a';
 }
 
 enum EnumTag2 {}
-class BrandedClass2 extends runtime.valueClass.ValueClass<never, EnumTag2> {
+class BrandedClass2 extends runtime.valueClass.ValueClass<EnumTag2> {
   a = 'a';
 }
 

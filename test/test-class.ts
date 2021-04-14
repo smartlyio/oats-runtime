@@ -4,7 +4,7 @@ import { ShapeOf } from '../src/runtime';
 
 export type ShapeOfTestClass = ShapeOf<TestClass>;
 
-export class TestClass extends ValueClass<never, 1> {
+export class TestClass extends ValueClass<1> {
   static make(v: ShapeOf<TestClass>): Make<TestClass> {
     return makeTestClass(v);
   }

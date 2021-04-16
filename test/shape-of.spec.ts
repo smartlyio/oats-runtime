@@ -22,12 +22,12 @@ function assignableTo<T>(_t: T) {
 }
 
 class BrandedClass extends runtime.valueClass.ValueClass {
-  #brand = null;
+  private readonly brand = null;
   a = 'a';
 }
 
 class BrandedClass2 extends runtime.valueClass.ValueClass {
-  #brand = null;
+  private readonly brand = null;
   a = 'a';
 }
 
